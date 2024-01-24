@@ -9,9 +9,15 @@ def get_args_parser():
     parser.add_argument('--unscale-lr', action='store_true')
     
     # Model params
-    parser.add_argument('--model', default='./original_models/mobilevit_s.pt', type=str, metavar='MODEL',
-                        choices=["deit_tiny_patch16_224","deit_small_patch16_224","deit_base_patch16_224", "./original_models/efficientformer_l1.pt", "./original_models/mobilevit_s.pt"], help='Name of model to train')
-
+    parser.add_argument('--model', default='./original_models/edgevit_xs.pt', type=str, metavar='MODEL',
+                        choices=[
+                            "deit_tiny_patch16_224",
+                            "deit_small_patch16_224",
+                            "deit_base_patch16_224", 
+                            "./original_models/efficientformer_l1.pt", 
+                            "./original_models/edgevit_xs.pt",
+                            "./original_models/edgevit_xxs.pt"
+                        ], help='Name of model to train')
     parser.add_argument('--drop', type=float, default=0.0, metavar='PCT',
                         help='Dropout rate (default: 0.)')
     parser.add_argument('--drop-path', type=float, default=0.1, metavar='PCT',
@@ -142,4 +148,7 @@ def get_args_parser():
                         help='number of distributed processes')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     parser.add_argument("--local_rank", default=0, type=int, help="local rank")
+    
+    # Compress
+    parser.add_argument('--compress', default=True, type = bool, help='Compress or not')
     return parser
