@@ -3,8 +3,8 @@ import datetime
 import json
 import os
 from pathlib import Path
-import numpy as np
 import time
+import random
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -22,10 +22,11 @@ from traing_related.train import train_one_epoch
 from utils.augment import new_data_aug_generator
 from utils.get_parser import get_args_parser
 from utils.samplers import RASampler
-from utils.utils import _load_checkpoint_for_ema, fix_seed, get_rank, get_world_size, init_distributed_mode, is_main_process, save_on_master
+from utils.utils import _load_checkpoint_for_ema, fix_seed, get_rank, get_world_size, init_distributed_mode, is_main_process, save_model, save_on_master
 
 def main(args):
     init_distributed_mode(args)
+    args.input_size = 256 if "mobilevit" in args.model else 224
     print(args)
     
     device = torch.device(args.device)
@@ -84,7 +85,12 @@ def main(args):
             mixup_alpha=args.mixup, cutmix_alpha=args.cutmix, cutmix_minmax=args.cutmix_minmax,
             prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
-    model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
+    if ".pt" in args.model:
+        model = torch.load(args.model, map_location="cpu")
+    elif "deit" in args.model:
+        model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
+    else:
+        raise Exception(f"Please check the model name.")
     model.to(device)
 
     model_ema = None
@@ -159,6 +165,9 @@ def main(args):
             set_training_mode=args.train_mode,  # keep in eval mode for deit finetuning / train mode for training and deit III finetuning
             args = args,
         )
+        
+        if (epoch % args.save_every == 0) or (epoch == args.epochs-1):
+            save_model(args, model, os.path.join(args.output_dir, f"{epoch}.pt"))
 
         lr_scheduler.step(epoch)
         if args.output_dir:
@@ -180,6 +189,7 @@ def main(args):
         
         if max_accuracy < test_stats["acc1"]:
             max_accuracy = test_stats["acc1"]
+            save_model(args, model, os.path.join(args.output_dir, f"best_model.pt"))
             if args.output_dir:
                 checkpoint_paths = [output_dir / 'best_checkpoint.pth']
                 for checkpoint_path in checkpoint_paths:

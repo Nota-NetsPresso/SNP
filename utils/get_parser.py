@@ -4,13 +4,13 @@ def get_args_parser():
     parser = argparse.ArgumentParser("DeiT training and evaluation with Structured Neuron-level Pruning script.", add_help=False)
     parser.add_argument('--batch-size', default=64, type=int)
     parser.add_argument('--epochs', default=300, type=int)
+    parser.add_argument('--save_every', default=10, type=int)
     parser.add_argument('--bce-loss', action='store_true')
     parser.add_argument('--unscale-lr', action='store_true')
     
     # Model params
-    parser.add_argument('--model', default='deit_small_patch16_224', type=str, metavar='MODEL',
-                        choices=["deit_tiny_patch16_224","deit_small_patch16_224","deit_base_patch16_224", "efficientformer_l1"], help='Name of model to train')
-    parser.add_argument('--input-size', default=224, type=int, help='images input size')
+    parser.add_argument('--model', default='./original_models/mobilevit_s.pt', type=str, metavar='MODEL',
+                        choices=["deit_tiny_patch16_224","deit_small_patch16_224","deit_base_patch16_224", "./original_models/efficientformer_l1.pt", "./original_models/mobilevit_s.pt"], help='Name of model to train')
 
     parser.add_argument('--drop', type=float, default=0.0, metavar='PCT',
                         help='Dropout rate (default: 0.)')
@@ -113,7 +113,7 @@ def get_args_parser():
     
     # Dataset parameters
     # parser.add_argument('--data-path', default='/datasets01/imagenet_full_size/061417/', type=str,
-    parser.add_argument('--data-path', default='/root/khshim/ssd3/khshim/z_data/imagenet/', type=str,
+    parser.add_argument('--data-path', default='/root/khshim/ssd1/kyunghwan.shim/z_data/imagenet/', type=str,
                         help='dataset path')
     parser.add_argument('--data-set', default='IMNET', choices=['CIFAR', 'IMNET'],
                         type=str, help='Image Net dataset path')

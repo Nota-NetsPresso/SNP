@@ -4,6 +4,7 @@ import random
 import numpy as np
 
 import torch
+from torch import fx
 import torch.distributed as dist
 
 def _load_checkpoint_for_ema(model_ema, checkpoint):
@@ -85,3 +86,11 @@ def fix_seed(seed):
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
+
+def save_model(args, model, save_loc):
+    model_wo_ddp = model
+    if hasattr(model, "module") and args.distributed:
+        model_wo_ddp = model.module
+    _graph = fx.Tracer().trace(model_wo_ddp)
+    model_wo_ddp = fx.GraphModule(model_wo_ddp, _graph)
+    torch.save(model_wo_ddp, save_loc)
