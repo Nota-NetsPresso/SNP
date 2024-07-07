@@ -13,6 +13,13 @@ import torch
 import torch.distributed as dist
 
 
+def set_seed(args):
+    seed = args.seed + utils.get_rank()
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    # random.seed(seed)
+    return
+
 class SmoothedValue(object):
     """Track a series of values and provide access to smoothed values over a
     window or the global series average.
