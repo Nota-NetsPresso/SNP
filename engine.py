@@ -45,7 +45,7 @@ def train_one_epoch(model: torch.nn.Module, criterion:torch.nn.CrossEntropyLoss,
         with torch.cuda.amp.autocast():
             outputs = model(samples)
             if not args.cosub:
-                loss = criterion(samples, outputs, targets)
+                loss = criterion(outputs, targets)
             else:
                 outputs = torch.split(outputs, outputs.shape[0]//2, dim=0)
                 loss = 0.25 * criterion(outputs[0], targets) 
