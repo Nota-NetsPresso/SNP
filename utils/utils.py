@@ -12,13 +12,7 @@ import datetime
 import torch
 import torch.distributed as dist
 
-
-def set_seed(args):
-    seed = args.seed + utils.get_rank()
-    torch.manual_seed(seed)
-    np.random.seed(seed)
-    # random.seed(seed)
-    return
+import numpy as np
 
 class SmoothedValue(object):
     """Track a series of values and provide access to smoothed values over a
@@ -208,6 +202,13 @@ def get_rank():
         return 0
     return dist.get_rank()
 
+
+def set_seed(args):
+    seed = args.seed + get_rank()
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    # random.seed(seed)
+    return
 
 def is_main_process():
     return get_rank() == 0
