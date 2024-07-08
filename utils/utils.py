@@ -14,6 +14,12 @@ import torch.distributed as dist
 
 import numpy as np
 
+def tofx(model):
+    _graph = fx.Tracer().trace(model)
+    model = fx.GraphModule(model, _graph)
+    return model
+    
+    
 class SmoothedValue(object):
     """Track a series of values and provide access to smoothed values over a
     window or the global series average.
