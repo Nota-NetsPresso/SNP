@@ -3,11 +3,13 @@ import json
 import torch
 
 from netspresso import NetsPresso
-from netspresso.enums import CompressionMethod, GroupPolicy, LayerNorm, Options, Policy
+from netspresso.enums import CompressionMethod, GroupPolicy, LayerNorm, Policy
+from netspresso.clients.compressor.v2.schemas import Options
+
 
 from utils.utils import tofx
 
-COMPRESS_RATIO_PATH="./SNP_compressiont/compress_ratio"
+COMPRESS_RATIO_PATH="./SNP_compression/compress_ratio"
 COMPRESS_RATIO={
     "deit_tiny_patch16_224":"DeiT_t.json",
     "deit_small_patch16_224":"DeiT_s.json",
@@ -19,7 +21,6 @@ def snp(args, model, inputs):
     
     model = tofx(model)
     orig_model_path = os.path.join(args.output_dir, "original_model.pt")
-    comp_model_path = os.path.join(args.output_dir, "compressed_model.pt")
 
     torch.save(model, orig_model_path)
 
@@ -35,7 +36,7 @@ def snp(args, model, inputs):
     # 3. Select compression method
     compression_info = compressor.select_compression_method(
         model_id=model.ai_model_id,
-        compression_method=CompressionMethod.PR_L2,
+        compression_method=CompressionMethod.PR_SNP,
         options=Options(
             policy=Policy.AVERAGE,
             layer_norm=LayerNorm.TSS_NORM,
@@ -44,14 +45,16 @@ def snp(args, model, inputs):
         ),
     )
 
-    # 4. Set params for compression(ratio or rank)
-    for available_layer in compression_info.available_layers[:5]:
-        available_layer.values = [0.2]
+    # 4. load compress ratio
+    with open(os.path.join(COMPRESS_RATIO_PATH, COMPRESS_RATIO[args.model]), "r") as j_file:
+        compress_ratio = json.load(j_file)
+
+    for available_layer in compression_info.available_layers:
+        available_layer.values = [compress_ratio[available_layer.name]]
 
     # 5. Compress model
     compressed_model = compressor.compress_model(
         compression=compression_info,
-        output_dir=comp_model_path,
+        output_dir=args.output_dir,
     )
-    print(compressed_model)
-    return compressed_model
+    return torch.load(compressed_model.compressed_model_path)
