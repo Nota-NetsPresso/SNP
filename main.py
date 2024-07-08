@@ -2,6 +2,7 @@ import argparse
 import datetime
 import numpy as np
 import time
+import random
 import torch
 import torch.backends.cudnn as cudnn
 import json
@@ -19,6 +20,7 @@ from dataset.datasets import build_dataset
 from engine import train_one_epoch, evaluate
 from dataset.samplers import RASampler
 from dataset.augment import new_data_aug_generator
+from SNP_compression.compress import snp
 
 from utils.parser import get_args
 import utils.utils as utils
@@ -80,6 +82,10 @@ def main(args):
         drop_last=False
     )
 
+    subset = torch.utils.data.Subset(dataset_train, [random.randint(0, len(dataset_train))-1 for _ in range(args.num_imgs_snp_calculation)])
+    data_loader_calc_snp = torch.utils.data.DataLoader(subset, args.num_imgs_snp_calculation, num_workers=0, shuffle=False)
+    inputs_to_calc = [list(data_loader_calc_snp)[0][0]]
+    
     mixup_fn = None
     mixup_active = args.mixup > 0 or args.cutmix > 0. or args.cutmix_minmax is not None
     if mixup_active:
@@ -89,7 +95,8 @@ def main(args):
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
 
     model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
-                    
+    model=snp(args, model, inputs_to_calc)
+
     if args.finetune:
         if args.finetune.startswith('https'):
             checkpoint = torch.hub.load_state_dict_from_url(
