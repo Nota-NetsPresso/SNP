@@ -2,10 +2,8 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser('Structured Neuron-level Pruning on DeiT', add_help=False)
-    # parser.add_argument('--NetsPresso-Email', required=True, type=str, help="User email of NetsPresso.")
-    # parser.add_argument('--NetsPresso-Pwd', required=True, type=str, help="Password of NetsPresso.")
-    parser.add_argument('--NetsPresso-Email', default="kyunghwan.shim@nota.ai", type=str, help="User email of NetsPresso.")
-    parser.add_argument('--NetsPresso-Pwd', default="rudghks2", type=str, help="Password of NetsPresso.")
+    parser.add_argument('--NetsPresso-Email', required=True, type=str, help="User email of NetsPresso.")
+    parser.add_argument('--NetsPresso-Pwd', required=True, type=str, help="Password of NetsPresso.")
     
     parser.add_argument('--batch-size', default=64, type=int)
     parser.add_argument('--epochs', default=300, type=int)
