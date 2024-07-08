@@ -43,17 +43,53 @@ Structured Neuron-level Pruning (SNP) prunes graphically connected query and key
 
 </center>
 
+## Installation
+```
+git clone git@github.com:Nota-NetsPresso/SNP.git
+pip install -r requirements.txt
+```
+
+## Getting Started
+### Reproduce results on ImageNet
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
+    python3 -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
+        main.py --NetsPresso-Email ${USER_NAME} \
+                --NetsPresso-Pwd ${USER_PWD} \
+                --model deit_tiny_patch16_224 \
+                --batch-size 256 \
+                --epochs 3 \
+                --output_dir ./output \
+                --data-path ${IMAGENET_PATH} \
+                > ./txt_logs/training_test.txt 2>&1 &
+```
+
+
 ## Try SNP on your own Model
-<!-- <div align="center">
-    <a href="https://netspresso.ai/?utm_source=git&utm_medium=banner_py&utm_campaign=np_renew" target="_blank"><img src="https://netspresso-docs-imgs.s3.ap-northeast-2.amazonaws.com/imgs/banner/NetsPresso2.0_banner.png"/>
-</div>
-</br> -->
 
 <div align="center">
-    <a href="https://github.com/Nota-NetsPresso/PyNetsPresso/tree/develop" target="_blank"><img src="https://netspresso-docs-imgs.s3.ap-northeast-2.amazonaws.com/imgs/banner/NetsPresso2.0_banner.png"/>
+    <a href="https://netspresso.ai/?utm_source=git&utm_medium=banner_py&utm_campaign=np_renew" target="_blank"><img src="https://netspresso-docs-imgs.s3.ap-northeast-2.amazonaws.com/imgs/banner/NetsPresso2.0_banner.png"/>
+</div>
+
+<br>
+
+<div align="center">
+  ☀️ NetsPresso Model Zoo ☀️ <br>
+      <a href="https://github.com/Nota-NetsPresso/ModelZoo-YOLOFastest-for-ARM-U55-M85"> YOLO Fastest </a>
+    | <a href="https://github.com/Nota-NetsPresso/yolox_nota"> YOLOX </a>
+    | <a href="https://github.com/Nota-NetsPresso/ultralytics_nota"> YOLOv8 </a> 
+    | <a href="https://github.com/Nota-NetsPresso/ModelZoo-YOLOv7"> YOLOv7 </a> 
+    | <a href="https://github.com/Nota-NetsPresso/yolov5_nota"> YOLOv5 </a> 
+    | <a href="https://github.com/Nota-NetsPresso/PIDNet_nota"> PIDNet </a>     
+    | <a href="https://github.com/Nota-NetsPresso/pytorch-cifar-models_nota"> PyTorch-CIFAR-Models</a>
 </div>
 </br>
 
+```Python
+import netspresso
+
+netspresso = NetsPresso(email=args.NetsPresso_Email, password=args.NetsPresso_Pwd)
+```
 
 ## Citation
 ```bibtex
