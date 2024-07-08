@@ -3,8 +3,8 @@
 This repository contains the official implementation of the paper "[SNP: Structured Neuron-level Pruning to Preserve Attention Scores](https://arxiv.org/abs/2404.11630)" accepted at the [European Conference on Computer Vision (ECCV) 2024](https://eccv.ecva.net/).
 
 <div align="center">
-    <img src="./fig/perf_latency_params_jetson_nano.png" alt="Description1" style="width:39.5%; display: inline-block;">
-    <img src="./fig/Fig1.PNG" alt="Description2" style="width:40%; display: inline-block;">
+    <img src="./fig/perf_latency_params_jetson_nano.png" alt="Description1" style="width:39%; display: inline-block;">
+    <img src="./fig/Fig1.PNG" alt="Description2" style="width:39.2%; display: inline-block;">
 </div>
 
 
