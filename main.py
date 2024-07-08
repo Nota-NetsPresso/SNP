@@ -1,44 +1,46 @@
-# Copyright (c) 2024-present, Nota, Inc.
+import argparse
 import datetime
-import json
-import os
-from pathlib import Path
+import numpy as np
 import time
-import random
-
 import torch
 import torch.backends.cudnn as cudnn
+import json
+
+from pathlib import Path
 
 from timm.data import Mixup
+from timm.models import create_model
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.scheduler import create_scheduler
 from timm.optim import create_optimizer
 from timm.utils import NativeScaler, get_state_dict, ModelEma
 
-from datasets.datasets import build_dataset
-from traing_related.eval import evaluate
-from traing_related.train import train_one_epoch
+from dataset.datasets import build_dataset
+from engine import train_one_epoch, evaluate
+from dataset.samplers import RASampler
+from dataset.augment import new_data_aug_generator
 
-from utils.augment import new_data_aug_generator
-from utils.get_parser import get_args_parser
-from utils.samplers import RASampler
-from utils.utils import _load_checkpoint_for_ema, fix_seed, get_rank, get_world_size, init_distributed_mode, is_main_process, save_model, save_on_master
+from utils.parser import get_args
+import utils.utils as utils
+
 
 def main(args):
-    init_distributed_mode(args)
-    args.input_size = 256 if "mobilevit" in args.model else 224
+    utils.init_distributed_mode(args)
+
     print(args)
-    
+
     device = torch.device(args.device)
-    fix_seed(args.seed)
+
+    # fix the seed for reproducibility
+    utils.set_seed(args)
     cudnn.benchmark = True
-    
+
     dataset_train, args.nb_classes = build_dataset(is_train=True, args=args)
     dataset_val, _ = build_dataset(is_train=False, args=args)
-    
+
     if args.distributed:
-        num_tasks = get_world_size()
-        global_rank = get_rank()
+        num_tasks = utils.get_world_size()
+        global_rank = utils.get_rank()
         if args.repeated_aug:
             sampler_train = RASampler(
                 dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
@@ -85,12 +87,67 @@ def main(args):
             mixup_alpha=args.mixup, cutmix_alpha=args.cutmix, cutmix_minmax=args.cutmix_minmax,
             prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
-    if ".pt" in args.model:
-        model = torch.load(args.model, map_location="cpu")
-    elif "deit" in args.model:
-        model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
-    else:
-        raise Exception(f"Please check the model name.")
+
+    model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
+                    
+    if args.finetune:
+        if args.finetune.startswith('https'):
+            checkpoint = torch.hub.load_state_dict_from_url(
+                args.finetune, map_location='cpu', check_hash=True)
+        else:
+            checkpoint = torch.load(args.finetune, map_location='cpu')
+
+        checkpoint_model = checkpoint['model']
+        state_dict = model.state_dict()
+        for k in ['head.weight', 'head.bias', 'head_dist.weight', 'head_dist.bias']:
+            if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
+                print(f"Removing key {k} from pretrained checkpoint")
+                del checkpoint_model[k]
+
+        # interpolate position embedding
+        pos_embed_checkpoint = checkpoint_model['pos_embed']
+        embedding_size = pos_embed_checkpoint.shape[-1]
+        num_patches = model.patch_embed.num_patches
+        num_extra_tokens = model.pos_embed.shape[-2] - num_patches
+        # height (== width) for the checkpoint position embedding
+        orig_size = int((pos_embed_checkpoint.shape[-2] - num_extra_tokens) ** 0.5)
+        # height (== width) for the new position embedding
+        new_size = int(num_patches ** 0.5)
+        # class_token and dist_token are kept unchanged
+        extra_tokens = pos_embed_checkpoint[:, :num_extra_tokens]
+        # only the position tokens are interpolated
+        pos_tokens = pos_embed_checkpoint[:, num_extra_tokens:]
+        pos_tokens = pos_tokens.reshape(-1, orig_size, orig_size, embedding_size).permute(0, 3, 1, 2)
+        pos_tokens = torch.nn.functional.interpolate(
+            pos_tokens, size=(new_size, new_size), mode='bicubic', align_corners=False)
+        pos_tokens = pos_tokens.permute(0, 2, 3, 1).flatten(1, 2)
+        new_pos_embed = torch.cat((extra_tokens, pos_tokens), dim=1)
+        checkpoint_model['pos_embed'] = new_pos_embed
+
+        model.load_state_dict(checkpoint_model, strict=False)
+        
+    if args.attn_only:
+        for name_p,p in model.named_parameters():
+            if '.attn.' in name_p:
+                p.requires_grad = True
+            else:
+                p.requires_grad = False
+        try:
+            model.head.weight.requires_grad = True
+            model.head.bias.requires_grad = True
+        except:
+            model.fc.weight.requires_grad = True
+            model.fc.bias.requires_grad = True
+        try:
+            model.pos_embed.requires_grad = True
+        except:
+            print('no position encoding')
+        try:
+            for p in model.patch_embed.parameters():
+                p.requires_grad = False
+        except:
+            print('no patch embed')
+            
     model.to(device)
 
     model_ema = None
@@ -109,11 +166,11 @@ def main(args):
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('number of params:', n_parameters)
     if not args.unscale_lr:
-        linear_scaled_lr = args.lr * args.batch_size * get_world_size() / 512.0
+        linear_scaled_lr = args.lr * args.batch_size * utils.get_world_size() / 512.0
         args.lr = linear_scaled_lr
     optimizer = create_optimizer(args, model_without_ddp)
     loss_scaler = NativeScaler()
-    
+
     lr_scheduler, _ = create_scheduler(args, optimizer)
 
     criterion = LabelSmoothingCrossEntropy()
@@ -128,9 +185,8 @@ def main(args):
         
     if args.bce_loss:
         criterion = torch.nn.BCEWithLogitsLoss()
-    
+        
     output_dir = Path(args.output_dir)
-
     if args.resume:
         if args.resume.startswith('https'):
             checkpoint = torch.hub.load_state_dict_from_url(
@@ -143,7 +199,7 @@ def main(args):
             lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
             args.start_epoch = checkpoint['epoch'] + 1
             if args.model_ema:
-                _load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
             if 'scaler' in checkpoint:
                 loss_scaler.load_state_dict(checkpoint['scaler'])
         lr_scheduler.step(args.start_epoch)
@@ -151,7 +207,8 @@ def main(args):
         test_stats = evaluate(data_loader_val, model, device)
         print(f"Accuracy of the network on the {len(dataset_val)} test images: {test_stats['acc1']:.1f}%")
         return
-    
+
+    print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
     max_accuracy = 0.0
     for epoch in range(args.start_epoch, args.epochs):
@@ -165,15 +222,12 @@ def main(args):
             set_training_mode=args.train_mode,  # keep in eval mode for deit finetuning / train mode for training and deit III finetuning
             args = args,
         )
-        
-        if (epoch % args.save_every == 0) or (epoch == args.epochs-1):
-            save_model(args, model, os.path.join(args.output_dir, f"{epoch}.pt"))
 
         lr_scheduler.step(epoch)
         if args.output_dir:
             checkpoint_paths = [output_dir / 'checkpoint.pth']
             for checkpoint_path in checkpoint_paths:
-                save_on_master({
+                utils.save_on_master({
                     'model': model_without_ddp.state_dict(),
                     'optimizer': optimizer.state_dict(),
                     'lr_scheduler': lr_scheduler.state_dict(),
@@ -189,11 +243,10 @@ def main(args):
         
         if max_accuracy < test_stats["acc1"]:
             max_accuracy = test_stats["acc1"]
-            save_model(args, model, os.path.join(args.output_dir, f"best_model.pt"))
             if args.output_dir:
                 checkpoint_paths = [output_dir / 'best_checkpoint.pth']
                 for checkpoint_path in checkpoint_paths:
-                    save_on_master({
+                    utils.save_on_master({
                         'model': model_without_ddp.state_dict(),
                         'optimizer': optimizer.state_dict(),
                         'lr_scheduler': lr_scheduler.state_dict(),
@@ -211,9 +264,7 @@ def main(args):
                      'n_parameters': n_parameters}
         
         
-        
-        
-        if args.output_dir and is_main_process():
+        if args.output_dir and utils.is_main_process():
             with (output_dir / "log.txt").open("a") as f:
                 f.write(json.dumps(log_stats) + "\n")
 
@@ -221,9 +272,9 @@ def main(args):
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
 
-if __name__=='__main__':
-    parser = get_args_parser()
-    args = parser.parse_args()
+
+if __name__ == '__main__':
+    args = get_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
     main(args)
