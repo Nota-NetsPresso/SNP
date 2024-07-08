@@ -1,7 +1,7 @@
 import os
 import torch
 
-from netpresso import NetsPresso
+from netspresso import NetsPresso
 from netspresso.enums import CompressionMethod, GroupPolicy, LayerNorm, Options, Policy
 
 def snp(args, model, inputs):
@@ -42,4 +42,5 @@ def snp(args, model, inputs):
         compression=compression_info,
         output_dir=comp_model_path,
     )
-    print("hi")
+    print(compressed_model)
+    return compressed_model
