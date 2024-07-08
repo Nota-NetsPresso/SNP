@@ -1,8 +1,18 @@
 import os
+import json
 import torch
 
 from netspresso import NetsPresso
 from netspresso.enums import CompressionMethod, GroupPolicy, LayerNorm, Options, Policy
+
+from utils.utils import tofx
+
+COMPRESS_RATIO_PATH="./SNP_compressiont/compress_ratio"
+COMPRESS_RATIO={
+    "deit_tiny_patch16_224":"DeiT_t.json",
+    "deit_small_patch16_224":"DeiT_s.json",
+    "deit_base_patch16_224":"DeiT_b.json"
+}
 
 def snp(args, model, inputs):
     netspresso = NetsPresso(email=args.NetsPresso_Email, password=args.NetsPresso_Pwd)
@@ -12,6 +22,7 @@ def snp(args, model, inputs):
     comp_model_path = os.path.join(args.output_dir, "compressed_model.pt")
 
     torch.save(model, orig_model_path)
+
     # 1. Declare compressor
     compressor = netspresso.compressor_v2()
 
