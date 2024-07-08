@@ -34,10 +34,10 @@ def snp(args, model, inputs):
 
     # 3. Select compression method
     compression_info = compressor.select_compression_method(
-        model_id=model.model_id,
+        model_id=model.ai_model_id,
         compression_method=CompressionMethod.PR_L2,
         options=Options(
-            policy=Policy.BACKWARD,
+            policy=Policy.AVERAGE,
             layer_norm=LayerNorm.TSS_NORM,
             group_policy=GroupPolicy.NONE,
             reshape_channel_axis=-1,
