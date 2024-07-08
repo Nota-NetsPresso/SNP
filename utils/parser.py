@@ -5,6 +5,9 @@ def get_args():
     parser.add_argument('--NetsPresso-Email', required=True, type=str, help="User email of NetsPresso.")
     parser.add_argument('--NetsPresso-Pwd', required=True, type=str, help="Password of NetsPresso.")
     
+    # compression params
+    parser.add_argument('--num-imgs-snp-calculation', default=64, type=int, help="Number of images to calculate importance score using SNP (default is 64).")
+
     parser.add_argument('--batch-size', default=64, type=int)
     parser.add_argument('--epochs', default=300, type=int)
     parser.add_argument('--bce-loss', action='store_true')
