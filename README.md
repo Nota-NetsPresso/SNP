@@ -2,7 +2,7 @@
 
 This repository contains the official implementation of the paper "[SNP: Structured Neuron-level Pruning to Preserve Attention Scores](https://arxiv.org/abs/2404.11630)" accepted at the [European Conference on Computer Vision (ECCV) 2024](https://eccv.ecva.net/).
 
-<div style="text-align: center;">
+<div align="center">
     <img src="./fig/perf_latency_params_jetson_nano.png" alt="Description1" style="width:39%; display: inline-block;">
     <img src="./fig/Fig1.PNG" alt="Description2" style="width:40%; display: inline-block;">
 </div>
@@ -12,7 +12,7 @@ This repository contains the official implementation of the paper "[SNP: Structu
 
 Structured Neuron-level Pruning (SNP) prunes graphically connected query and key layers having the least informative attention scores while preserving the overall attention scores. Value layers, which can be pruned independently, are pruned to eliminate inter-head redundancy. Our proposed method effectively compresses and accelerates Transformer-based models for both edge devices and server processors. SNP with head pruning could compress the DeiT-Base by 80\% of the parameters and computational costs and achieve 3.85× faster inference speed on RTX3090 and 4.93× on Jetson Nano.
 
-<div style="text-align: center;">
+<div align="center">
     <img src="./fig/proposed methods.PNG" alt="Description1" style="width:65%; display: inline-block;">
     <img src="./fig/fig3_attention_maps.PNG" alt="Description2" style="width:30%; display: inline-block;">
 </div>
