@@ -53,8 +53,8 @@ def snp(args, model, inputs):
         available_layer.values = [compress_ratio[available_layer.name]]
 
     # 5. Compress model
-    compressed_model = compressor.compress_model(
+    compressed_model_info = compressor.compress_model(
         compression=compression_info,
         output_dir=args.output_dir,
     )
-    return torch.load(compressed_model.compressed_model_path)
+    return torch.load(compressed_model_info.compressed_model_path)
