@@ -15,7 +15,11 @@ def get_args():
 
     # Model parameters
     parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL',
-                        choices=["deit_tiny_patch16_224","deit_small_patch16_224","deit_base_patch16_224"], help='Name of model to train')
+                        choices=[
+                            "deit_tiny_patch16_224","deit_small_patch16_224","deit_base_patch16_224", 
+                            "./reported_models/compressed_models/DeiT-T.pt","./reported_models/compressed_models/DeiT-S_2GFLOPs.pt","./reported_models/compressed_models/DeiT-S_1_27GFLOPs.pt",
+                        ], 
+                        help='Name of model to train')
     parser.add_argument('--input-size', default=224, type=int, help='images input size')
 
     parser.add_argument('--drop', type=float, default=0.0, metavar='PCT',
