@@ -92,7 +92,7 @@ from netspresso import NetsPresso
 compressor = netspresso.compressor_v2()
 # 2. Upload model
 model = compressor.upload_model(
-    input_model_path=orig_model_path,
+    input_model_path=${MODEL_PATH},
     input_shapes=[{"batch": 1, "channel": 3, "dimension": [224, 224]}],
 )
 # 3. Select compression method
@@ -107,16 +107,13 @@ compression_info = compressor.select_compression_method(
     ),
 )
 # 4. load compress ratio
-with open(os.path.join(COMPRESS_RATIO_PATH, COMPRESS_RATIO[args.model]), "r") as j_file:
-    compress_ratio = json.load(j_file)
-
 for available_layer in compression_info.available_layers:
-    available_layer.values = [compress_ratio[available_layer.name]]
+    available_layer.values = [${COMPRESS_RATIO}[available_layer.name]]
 
 # 5. Compress model
 compressed_model_info = compressor.compress_model(
     compression=compression_info,
-    output_dir=args.output_dir,
+    output_dir=${SAVE_DIR},
 )
 compressed_model=torch.load(compressed_model_info.compressed_model_path)
 ```
