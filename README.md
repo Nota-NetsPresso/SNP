@@ -4,7 +4,7 @@ This repository contains the official implementation of the paper "[SNP: Structu
 ## Introduction
 
 <div style="float: right; width: 40%;">
-    <img src="./fig/Fig1.PNG" alt="Description" style="width: 100%;">
+    <img src="./fig/Fig1.PNG" alt="Description" style="width: 40%;">
 </div>
 
 Structured Neuron-level Pruning (SNP) prunes graphically connected query and key layers having the least informative attention scores while preserving the overall attention scores. Value layers, which can be pruned independently, are pruned to eliminate inter-head redundancy. Our proposed method effectively compresses and accelerates Transformer-based models for both edge devices and server processors. SNP with head pruning could compress the DeiT-Base by 80\% of the parameters and computational costs and achieve 3.85× faster inference speed on RTX3090 and 4.93× on Jetson Nano.
