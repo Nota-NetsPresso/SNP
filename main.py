@@ -94,8 +94,11 @@ def main(args):
             prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
 
-    model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
-    model=snp(args, model, inputs_to_calc)
+    if ".pt" in args.model:
+        model = torch.load(args.model)
+    else:
+        model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
+        model=snp(args, model, inputs_to_calc)
 
     if args.finetune:
         if args.finetune.startswith('https'):
