@@ -4,7 +4,7 @@ This repository contains the official implementation of the paper "[SNP: Structu
 
 <div align="center">
     <img src="./fig/perf_latency_params_jetson_nano.png" alt="Description1" style="width:39%; display: inline-block;">
-    <img src="./fig/Fig1.PNG" alt="Description2" style="width:39.2%; display: inline-block;">
+    <img src="./fig/Fig1.PNG" alt="Description2" style="width:39%; display: inline-block;">
 </div>
 
 
