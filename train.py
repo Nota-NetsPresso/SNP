@@ -84,7 +84,6 @@ def main(args):
 
     subset = torch.utils.data.Subset(dataset_train, [random.randint(0, len(dataset_train))-1 for _ in range(args.num_imgs_snp_calculation)])
     data_loader_calc_snp = torch.utils.data.DataLoader(subset, args.num_imgs_snp_calculation, num_workers=0, shuffle=False)
-    inputs_to_calc = [list(data_loader_calc_snp)[0][0]]
     
     mixup_fn = None
     mixup_active = args.mixup > 0 or args.cutmix > 0. or args.cutmix_minmax is not None
@@ -94,11 +93,7 @@ def main(args):
             prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
 
-    if ".pt" in args.model:
-        model = torch.load(args.model)
-    else:
-        model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
-        model=snp(args, model, inputs_to_calc)
+    model = load_model(args)
 
     if args.finetune:
         if args.finetune.startswith('https'):
@@ -281,7 +276,6 @@ def main(args):
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
-
 
 if __name__ == '__main__':
     args = get_args()
