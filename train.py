@@ -82,9 +82,6 @@ def main(args):
         drop_last=False
     )
 
-    subset = torch.utils.data.Subset(dataset_train, [random.randint(0, len(dataset_train))-1 for _ in range(args.num_imgs_snp_calculation)])
-    data_loader_calc_snp = torch.utils.data.DataLoader(subset, args.num_imgs_snp_calculation, num_workers=0, shuffle=False)
-    
     mixup_fn = None
     mixup_active = args.mixup > 0 or args.cutmix > 0. or args.cutmix_minmax is not None
     if mixup_active:
