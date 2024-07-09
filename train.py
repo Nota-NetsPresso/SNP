@@ -22,7 +22,7 @@ from dataset.samplers import RASampler
 from dataset.augment import new_data_aug_generator
 from SNP_compression.compress import snp
 
-from utils.parser import get_args
+from utils.parser import get_train_args
 import utils.utils as utils
 
 
@@ -278,7 +278,7 @@ def main(args):
     print('Training time {}'.format(total_time_str))
 
 if __name__ == '__main__':
-    args = get_args()
+    args = get_train_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
     main(args)

@@ -1,12 +1,17 @@
 import argparse
 
-def get_args():
-    parser = argparse.ArgumentParser('Structured Neuron-level Pruning on DeiT', add_help=False)
+def get_compress_args():
+    # compression params
+    parser = argparse.ArgumentParser("Compress DeiT model using SNP", add_help=Fasle)
     parser.add_argument('--NetsPresso-Email', required=True, type=str, help="User email of NetsPresso.")
     parser.add_argument('--NetsPresso-Pwd', required=True, type=str, help="Password of NetsPresso.")
-    
-    # compression params
     parser.add_argument('--num-imgs-snp-calculation', default=64, type=int, help="Number of images to calculate importance score using SNP (default is 64).")
+    parser.add_argument('--output_dir', default='./output', help='path where to save.')
+    args = parser.parse_args()
+    return args
+
+def get_train_args():
+    parser = argparse.ArgumentParser('Training DeiT based models using ImageNet', add_help=False)
 
     parser.add_argument('--batch-size', default=64, type=int)
     parser.add_argument('--epochs', default=300, type=int)
@@ -15,10 +20,6 @@ def get_args():
 
     # Model parameters
     parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL',
-                        choices=[
-                            "deit_tiny_patch16_224","deit_small_patch16_224","deit_base_patch16_224", 
-                            "./reported_models/compressed_models/DeiT-T.pt","./reported_models/compressed_models/DeiT-S_2GFLOPs.pt","./reported_models/compressed_models/DeiT-S_1_27GFLOPs.pt",
-                        ], 
                         help='Name of model to train')
     parser.add_argument('--input-size', default=224, type=int, help='images input size')
 
