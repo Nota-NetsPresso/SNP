@@ -74,7 +74,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 1. To compress the DeiT model, use the following command:
 
     ```bash 
-    python3 compress.py --NetsPresso-Email ${USER_NAME} \
+    python compress.py --NetsPresso-Email ${USER_NAME} \
                         --NetsPresso-Pwd ${USER_PWD} \
                         --model deit_tiny_patch16_224 \
                         --data-path ${IMAGENET_PATH}\
@@ -84,7 +84,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 2. To train the compressed model (saved in the `compressed` directory within `output_dir`), use the following command:
     ```bash
     CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
-        python3 -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
+        python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
             train.py --model "${OUPUT_DIR}/compressed/compressed.pt" \
                     --batch-size 256 \
                     --epochs 300 \

@@ -12,7 +12,7 @@ export IMAGENET_PATH
 
 export OUPUT_DIR="./output"
 
-python3 compress.py --NetsPresso-Email ${USER_NAME} \
+python compress.py --NetsPresso-Email ${USER_NAME} \
                     --NetsPresso-Pwd ${USER_PWD} \
                     --model deit_tiny_patch16_224 \
                     --data-path ${IMAGENET_PATH}\
@@ -26,7 +26,7 @@ if [ $? -ne 0 ]; then
 fi
 
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
-    python3 -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
+    python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
         train.py --model "${OUPUT_DIR}/compressed/compressed.pt" \
                  --batch-size 256 \
                  --epochs 20 \
