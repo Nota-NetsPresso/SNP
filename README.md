@@ -119,16 +119,21 @@ from netspresso import NetsPresso
 from netspresso.enums import CompressionMethod, GroupPolicy, LayerNorm, Policy
 from netspresso.clients.compressor.v2.schemas import Options
 
-# 0 login NetsPresso
+# Step 0: Login to NetsPresso
 netspresso = NetsPresso(email=args.NetsPresso_Email, password=args.NetsPresso_Pwd)
-# 1. Declare compressor
+
+# Step 1: Declare the compressor
 compressor = netspresso.compressor_v2()
-# 2. Upload model
+
+# Step 2: Upload the model
+# Provide the path to your model and specify the input shape
 model = compressor.upload_model(
     input_model_path=${MODEL_PATH},
     input_shapes=[{"batch": 1, "channel": 3, "dimension": [224, 224]}],
 )
-# 3. Select compression method
+
+# Step 3: Select the compression method
+# Specify the compression method and options
 compression_info = compressor.select_compression_method(
     model_id=model.ai_model_id,
     compression_method=CompressionMethod.PR_SNP,
@@ -139,15 +144,20 @@ compression_info = compressor.select_compression_method(
         reshape_channel_axis=-1,
     ),
 )
-# 4. load compress ratio
+
+# Step 4: Load the compression ratio for each layer
+# Assign the compression ratio for each available layer
 for available_layer in compression_info.available_layers:
     available_layer.values = [${COMPRESS_RATIO}[available_layer.name]]
 
-# 5. Compress model
+# Step 5: Compress the model
+# Perform the compression and save the compressed model
 compressed_model_info = compressor.compress_model(
     compression=compression_info,
     output_dir=${SAVE_DIR},
 )
+
+# Load the compressed model
 compressed_model=torch.load(compressed_model_info.compressed_model_path)
 ```
 
