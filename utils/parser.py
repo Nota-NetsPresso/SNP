@@ -2,11 +2,28 @@ import argparse
 
 def get_compress_args():
     # compression params
-    parser = argparse.ArgumentParser("Compress DeiT model using SNP", add_help=Fasle)
+    parser = argparse.ArgumentParser("Compress DeiT model using SNP", add_help=False)
     parser.add_argument('--NetsPresso-Email', required=True, type=str, help="User email of NetsPresso.")
     parser.add_argument('--NetsPresso-Pwd', required=True, type=str, help="Password of NetsPresso.")
+
+    parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL',
+                        choices=["deit_tiny_patch16_224", "deit_small_patch16_224", "deit_base_patch16_224"], help='Name of model to train')
     parser.add_argument('--num-imgs-snp-calculation', default=64, type=int, help="Number of images to calculate importance score using SNP (default is 64).")
-    parser.add_argument('--output_dir', default='./output', help='path where to save.')
+
+    # Dataset parameters
+    parser.add_argument('--data-path', default='/root/khshim/ssd3/khshim/z_data/imagenet/', type=str,
+                        help='dataset path')
+    parser.add_argument('--data-set', default='IMNET', choices=['CIFAR', 'IMNET', 'INAT', 'INAT19'],
+                        type=str, help='Image Net dataset path')
+    parser.add_argument('--inat-category', default='name',
+                        choices=['kingdom', 'phylum', 'class', 'order', 'supercategory', 'family', 'genus', 'name'],
+                        type=str, help='semantic granularity')
+    parser.add_argument('--num_workers', default=10, type=int)
+    parser.add_argument('--no-pin-mem', action='store_false', dest='pin_mem',
+                        help='')
+    parser.set_defaults(pin_mem=True)
+
+    parser.add_argument('--output_dir', default='./output', help='path where to save compressed model.')
     args = parser.parse_args()
     return args
 
