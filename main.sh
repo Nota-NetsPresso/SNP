@@ -1,17 +1,20 @@
 #!/bin/bash
 
-read -p "Enter your NetsPresso Email: " USER_NAME
-read -s -p "Enter your NetsPresso Password: " USER_PWD
+read -p "Please enter your NetsPresso Email: " USER_NAME
+read -s -p "Please enter your NetsPresso Password: " USER_PWD
+read -p "Please enter the path to your ImageNet dataset: " IMAGENET_PATH
+
 echo
 
 export USER_NAME
 export USER_PWD
+export IMAGENET_PATH
 
-export IMAGENET_PATH="/root/khshim/ssd3/khshim/z_data/imagenet/"
 export OUPUT_DIR="./output"
 
 python3 compress.py --NetsPresso-Email ${USER_NAME} \
                     --NetsPresso-Pwd ${USER_PWD} \
+                    --model deit_tiny_patch16_224 \
                     --data-path ${IMAGENET_PATH}\
                     --output_dir ${OUPUT_DIR} \
                     --num-imgs-snp-calculation 64\
