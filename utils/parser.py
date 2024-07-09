@@ -1,49 +1,25 @@
 import argparse
 
+
 def get_compress_args():
-    # compression params
     parser = argparse.ArgumentParser("Compress DeiT model using SNP", add_help=False)
+    parser = base_parser(parser)
     parser.add_argument('--NetsPresso-Email', required=True, type=str, help="User email of NetsPresso.")
     parser.add_argument('--NetsPresso-Pwd', required=True, type=str, help="Password of NetsPresso.")
-
-    parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL',
-                        choices=["deit_tiny_patch16_224", "deit_small_patch16_224", "deit_base_patch16_224"], help='Name of model to train')
+    
+    # compression params
     parser.add_argument('--num-imgs-snp-calculation', default=64, type=int, help="Number of images to calculate importance score using SNP (default is 64).")
-
-    # Dataset parameters
-    parser.add_argument('--data-path', default='/root/khshim/ssd3/khshim/z_data/imagenet/', type=str,
-                        help='dataset path')
-    parser.add_argument('--data-set', default='IMNET', choices=['CIFAR', 'IMNET', 'INAT', 'INAT19'],
-                        type=str, help='Image Net dataset path')
-    parser.add_argument('--inat-category', default='name',
-                        choices=['kingdom', 'phylum', 'class', 'order', 'supercategory', 'family', 'genus', 'name'],
-                        type=str, help='semantic granularity')
-    parser.add_argument('--num_workers', default=10, type=int)
-    parser.add_argument('--no-pin-mem', action='store_false', dest='pin_mem',
-                        help='')
-    parser.set_defaults(pin_mem=True)
-
-    parser.add_argument('--output_dir', default='./output', help='path where to save compressed model.')
     args = parser.parse_args()
     return args
 
 def get_train_args():
     parser = argparse.ArgumentParser('Training DeiT based models using ImageNet', add_help=False)
+    parser = base_parser(parser)
 
     parser.add_argument('--batch-size', default=64, type=int)
     parser.add_argument('--epochs', default=300, type=int)
     parser.add_argument('--bce-loss', action='store_true')
     parser.add_argument('--unscale-lr', action='store_true')
-
-    # Model parameters
-    parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL',
-                        help='Name of model to train')
-    parser.add_argument('--input-size', default=224, type=int, help='images input size')
-
-    parser.add_argument('--drop', type=float, default=0.0, metavar='PCT',
-                        help='Dropout rate (default: 0.)')
-    parser.add_argument('--drop-path', type=float, default=0.1, metavar='PCT',
-                        help='Drop path rate (default: 0.1)')
 
     parser.add_argument('--model-ema', action='store_true')
     parser.add_argument('--no-model-ema', action='store_false', dest='model_ema')
@@ -91,6 +67,33 @@ def get_train_args():
     parser.add_argument('--decay-rate', '--dr', type=float, default=0.1, metavar='RATE',
                         help='LR decay rate (default: 0.1)')
 
+    parser.add_argument('--device', default='cuda',
+                        help='device to use for training / testing')
+    parser.add_argument('--resume', default='', help='resume from checkpoint')
+    parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
+                        help='start epoch')
+    parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
+    parser.add_argument('--eval-crop-ratio', default=0.875, type=float, help="Crop ratio for evaluation")
+    parser.add_argument('--dist-eval', action='store_true', default=False, help='Enabling distributed evaluation')
+    parser.add_argument("--local_rank", default=0, type=int, help="local rank")
+
+    # distributed training parameters
+    parser.add_argument('--distributed', action='store_true', default=False, help='Enabling distributed training')
+    parser.add_argument('--world_size', default=1, type=int,
+                        help='number of distributed processes')
+    parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
+    args = parser.parse_args()
+    return args
+
+def base_parser(parser):
+    # Model parameters
+    parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL', help='Name of model to train (choose among :  "deit_tiny_patch16_224","deit_small_patch16_224","deit_base_patch16_224" or saved pt(fx symbolically traced) model)')
+    parser.add_argument('--input-size', default=224, type=int, help='images input size')
+    parser.add_argument('--drop', type=float, default=0.0, metavar='PCT',
+                        help='Dropout rate (default: 0.)')
+    parser.add_argument('--drop-path', type=float, default=0.1, metavar='PCT',
+                        help='Drop path rate (default: 0.1)')
+
     # Augmentation parameters
     parser.add_argument('--color-jitter', type=float, default=0.3, metavar='PCT',
                         help='Color jitter factor (default: 0.3)')
@@ -112,7 +115,7 @@ def get_train_args():
     parser.add_argument('--ThreeAugment', action='store_true') #3augment
     
     parser.add_argument('--src', action='store_true') #simple random crop
-    
+
     # * Random Erase params
     parser.add_argument('--reprob', type=float, default=0.25, metavar='PCT',
                         help='Random erase prob (default: 0.25)')
@@ -153,30 +156,13 @@ def get_train_args():
                         choices=['kingdom', 'phylum', 'class', 'order', 'supercategory', 'family', 'genus', 'name'],
                         type=str, help='semantic granularity')
 
+    parser.add_argument('--seed', default=0, type=int)
     parser.add_argument('--output_dir', default='./output',
                         help='path where to save, empty for no saving')
-    parser.add_argument('--device', default='cuda',
-                        help='device to use for training / testing')
-    parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--resume', default='', help='resume from checkpoint')
-    parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
-                        help='start epoch')
-    parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
-    parser.add_argument('--eval-crop-ratio', default=0.875, type=float, help="Crop ratio for evaluation")
-    parser.add_argument('--dist-eval', action='store_true', default=False, help='Enabling distributed evaluation')
-    parser.add_argument('--num_workers', default=10, type=int)
     parser.add_argument('--pin-mem', action='store_true',
                         help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
     parser.add_argument('--no-pin-mem', action='store_false', dest='pin_mem',
                         help='')
-    parser.add_argument("--local_rank", default=0, type=int, help="local rank")
+    parser.add_argument('--num_workers', default=10, type=int)
     parser.set_defaults(pin_mem=True)
-
-    # distributed training parameters
-    parser.add_argument('--distributed', action='store_true', default=False, help='Enabling distributed training')
-    parser.add_argument('--world_size', default=1, type=int,
-                        help='number of distributed processes')
-    parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
-    args = parser.parse_args()
-    return args
-
+    return parser
