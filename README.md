@@ -55,7 +55,7 @@ pip install -r requirements.txt
 To compress the DeiT model using SNP, you need to sign up for a NetsPresso account. You can sign up [here](https://netspresso.ai/) or go directly to the [Sign Up page](https://account.netspresso.ai/signup).
 
 ### Simple Run
-To compress the DeiT-T model using SNP and train it for 20 epochs, follow these steps:
+Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 1. Run the main script:
     ```
     bash main.sh
