@@ -65,7 +65,7 @@ To compress the DeiT-T model using SNP and train it for 20 epochs, follow these 
     Please enter your NetsPresso Email:
     Please enter your NetsPresso Password:
     ```
-3. Enter the pathj to your ImageNet dataset:
+3. Enter the path to your ImageNet dataset:
     ```
     Please enter the path to your ImageNet dataset:
     ```
