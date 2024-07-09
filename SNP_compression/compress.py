@@ -21,6 +21,7 @@ def snp(args, model, inputs):
     
     model = tofx(model)
     orig_model_path = os.path.join(args.output_dir, "original_model.pt")
+    compress_model_path = os.path.join(args.output_dir, "compressed")
 
     torch.save(model, orig_model_path)
 
@@ -55,6 +56,6 @@ def snp(args, model, inputs):
     # 5. Compress model
     compressed_model_info = compressor.compress_model(
         compression=compression_info,
-        output_dir=args.output_dir,
+        output_dir=compress_model_path,
     )
     return torch.load(compressed_model_info.compressed_model_path)
