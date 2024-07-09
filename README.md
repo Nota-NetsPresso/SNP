@@ -71,6 +71,54 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
     ```
 
 ### Reproduce results on ImageNet
+<details>
+<summary>Reproducing the results of DeiT-T</summary>
+
+    CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
+        python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
+            train.py --model "./reported_models/compressed_models/DeiT-T.pt" \
+                    --lr 0.001 \
+                    --batch-size 256 \
+                    --epochs 300 \
+                    --output_dir ${OUPUT_DIR} \
+                    --data-path  ${IMAGENET_PATH}\
+                    > ./txt_logs/training_deit_t.txt 2>&1 &
+
+</details>
+
+<details>
+
+<summary> Reproducing the results of DeiT-S 2GFLOPs** with 78.52 on ImageNet </summary>
+
+        CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
+            python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
+                train.py --model "./reported_models/compressed_models/DeiT-S_2GFLOPs.pt" \
+                        --lr 0.001 \
+                        --batch-size 256 \
+                        --epochs 300 \
+                        --output_dir ${OUPUT_DIR} \
+                        --data-path  ${IMAGENET_PATH}\
+                        > ./txt_logs/training_deit_s_2GFLOPs.txt 2>&1 &
+                        
+</details>
+
+<details>
+<summary>Reproducing the results of DeiT-S 1.27GFLOPs with 73.32 on ImageNet</summary>
+
+        CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
+            python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
+                train.py --model "./reported_models/compressed_models/DeiT-S_1_27GFLOPs.pt" \
+                        --lr 0.001 \
+                        --batch-size 256 \
+                        --epochs 300 \
+                        --output_dir ${OUPUT_DIR} \
+                        --data-path  ${IMAGENET_PATH}\
+                        > ./txt_logs/training_deit_s_1_27GFLOPs.txt 2>&1 &
+                        
+</details>
+
+
+### Overall Instructions for SNP
 1. To compress the DeiT model, use the following command:
 
     ```bash 
@@ -81,6 +129,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
                         --output_dir ${OUPUT_DIR} \
                         --num-imgs-snp-calculation 64\
     ```
+
 2. To train the compressed model (saved in the `compressed` directory within `output_dir`), use the following command:
     ```bash
     CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
@@ -92,7 +141,6 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
                     --data-path  ${IMAGENET_PATH}\
                     > ./txt_logs/training_test.txt 2>&1 &
     ```
-
 
 ## Try SNP on your own Model
 
