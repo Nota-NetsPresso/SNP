@@ -50,19 +50,48 @@ pip install -r requirements.txt
 ```
 
 ## Getting Started
+### Sign Up for  [NetsPresso](https://netspresso.ai/) 
+
+To compress the DeiT model using SNP, you need to sign up for a NetsPresso account. You can sign up [here](https://netspresso.ai/) or go directly to the [Sign Up page](https://account.netspresso.ai/signup).
+
+### Simple Run
+To compress the DeiT-T model using SNP and train it for 20 epochs, follow these steps:
+1. Run the main script:
+    ```
+    bash main.sh
+    ```
+2. When prompted, enter your NetsPresso user information:
+    ```
+    Please enter your NetsPresso Email:
+    Please enter your NetsPresso Password:
+    ```
+3. Enter the pathj to your ImageNet dataset:
+    ```
+    Please enter the path to your ImageNet dataset:
+    ```
+
 ### Reproduce results on ImageNet
-```bash
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
-    python3 -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
-        main.py --NetsPresso-Email ${USER_NAME} \
-                --NetsPresso-Pwd ${USER_PWD} \
-                --model deit_tiny_patch16_224 \
-                --batch-size 256 \
-                --epochs 300 \
-                --output_dir ./output \
-                --data-path ${IMAGENET_PATH} \
-                > ./txt_logs/training_test.txt 2>&1 &
-```
+1. To compress the DeiT model, use the following command:
+
+    ```bash 
+    python3 compress.py --NetsPresso-Email ${USER_NAME} \
+                        --NetsPresso-Pwd ${USER_PWD} \
+                        --model deit_tiny_patch16_224 \
+                        --data-path ${IMAGENET_PATH}\
+                        --output_dir ${OUPUT_DIR} \
+                        --num-imgs-snp-calculation 64\
+    ```
+2. To train the compressed model (saved in the `compressed` directory within `output_dir`), use the following command:
+    ```bash
+    CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
+        python3 -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
+            train.py --model "${OUPUT_DIR}/compressed/compressed.pt" \
+                    --batch-size 256 \
+                    --epochs 300 \
+                    --output_dir ${OUPUT_DIR} \
+                    --data-path  ${IMAGENET_PATH}\
+                    > ./txt_logs/training_test.txt 2>&1 &
+    ```
 
 
 ## Try SNP on your own Model
