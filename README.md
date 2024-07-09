@@ -72,7 +72,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 
 ### Reproduce results on ImageNet
 <details>
-<summary>Reproducing the results of DeiT-T with 0.6 GFLOPs and 70.29% accuracy on ImageNet.</summary>
+<summary>Reproducing the results of DeiT-T with 0.6 GFLOPs and 70.29% on ImageNet.</summary>
 
     CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
         python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
@@ -87,7 +87,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 </details>
 
 <details>
-<summary> Reproducing the results of DeiT-S with 2 GFLOPs and 78.52% accuracy on ImageNet.</summary>
+<summary> Reproducing the results of DeiT-S with 2 GFLOPs and 78.52% on ImageNet.</summary>
 
         CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
             python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
@@ -102,7 +102,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 </details>
 
 <details>
-<summary>Reproducing the results of DeiT-S with 1.27 GFLOPs and 73.32% accuracy on ImageNet.</summary>
+<summary>Reproducing the results of DeiT-S with 1.27 GFLOPs and 73.32% on ImageNet.</summary>
 
         CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
             python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
