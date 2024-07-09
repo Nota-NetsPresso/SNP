@@ -12,7 +12,7 @@ Structured Neuron-level Pruning (SNP) prunes neurons with less informative atten
 
 ## Proposed Method
 
-Structured Neuron-level Pruning (SNP) prunes graphically connected query and key layers having the least informative attention scores while preserving the overall attention scores. Value layers, which can be pruned independently, are pruned to eliminate inter-head redundancy.
+Structured Neuron-level Pruning (SNP) prunes graphically connected query and key layers having the least informative attention scores while preserving the overall attention scores. Value layers, which can be pruned independently, are pruned to eliminate inter-head redundancy. For more detailed information please refer to the main [paper](https://arxiv.org/abs/2404.11630).
 
 <div align="center">
     <img src="./fig/proposed methods.PNG" alt="Description1" style="width:65%; display: inline-block;">
