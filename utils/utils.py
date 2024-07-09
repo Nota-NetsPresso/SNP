@@ -19,7 +19,15 @@ def tofx(model):
     _graph = fx.Tracer().trace(model)
     model = fx.GraphModule(model, _graph)
     return model
-    
+
+def load_model(args):
+    if ".pt" in args.model:
+        model = torch.load(args.model, map_location='cpu')
+    else:
+        model = torch.hub.load('facebookresearch/deit:main', args.model, pretrained=True)
+        model = tofx(model)
+    return model
+
 class SmoothedValue(object):
     """Track a series of values and provide access to smoothed values over a
     window or the global series average.
