@@ -116,7 +116,11 @@ To compress the DeiT-T model using SNP and train it for 20 epochs, follow these 
 
 ```Python
 from netspresso import NetsPresso
+from netspresso.enums import CompressionMethod, GroupPolicy, LayerNorm, Policy
+from netspresso.clients.compressor.v2.schemas import Options
 
+# 0 login NetsPresso
+netspresso = NetsPresso(email=args.NetsPresso_Email, password=args.NetsPresso_Pwd)
 # 1. Declare compressor
 compressor = netspresso.compressor_v2()
 # 2. Upload model
