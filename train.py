@@ -20,7 +20,6 @@ from dataset.datasets import build_dataset
 from engine import train_one_epoch, evaluate
 from dataset.samplers import RASampler
 from dataset.augment import new_data_aug_generator
-from SNP_compression.compress import snp
 
 from utils.parser import get_train_args
 import utils.utils as utils
@@ -90,7 +89,7 @@ def main(args):
             prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
 
-    model = load_model(args)
+    model = utils.load_model(args)
 
     if args.finetune:
         if args.finetune.startswith('https'):
