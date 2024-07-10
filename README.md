@@ -46,7 +46,7 @@ Structured Neuron-level Pruning (SNP) prunes graphically connected query and key
 
 ## Installation
 ```
-git clone git@github.com:Nota-NetsPresso/SNP.git
+git clone https://github.com/Nota-NetsPresso/SNP.git
 pip install -r requirements.txt
 ```
 
