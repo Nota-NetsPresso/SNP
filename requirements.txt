@@ -1,11 +1,7 @@
 netspresso==1.7.1
 numpy==1.23.4
-tensorboard==2.8.0
 timm==0.9.16
 torch==1.13.0
-torchaudio==2.2.0.dev20240415+cpu
-torchinfo==1.8.0
-torchprofile==0.0.4
 torchsummary==1.5.1
 torchvision==0.14.0
 tqdm==4.65.0
