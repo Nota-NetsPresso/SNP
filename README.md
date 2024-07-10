@@ -1,18 +1,22 @@
-# [[ECCV 2024](https://eccv.ecva.net/)] [SNP: Structured Neuron-level Pruning to Preserve Attention Scores](https://arxiv.org/abs/2404.11630)
+# [[ECCV 2024](https://eccv.ecva.net/Conferences/2024)] [SNP: Structured Neuron-level Pruning to Preserve Attention Scores](https://arxiv.org/abs/2404.11630)
 
-This repository contains the official implementation of the paper "[SNP: Structured Neuron-level Pruning to Preserve Attention Scores](https://arxiv.org/abs/2404.11630)" accepted at the [European Conference on Computer Vision (ECCV) 2024](https://eccv.ecva.net/).
-
-## Introduction
-Structured Neuron-level Pruning (SNP) prunes neurons with less informative attention scores and eliminates redundancy among heads. Our proposed method effectively compresses and accelerates Transformer-based models for both edge devices and server processors. SNP with head pruning could compress the DeiT-Base by 80\% of the parameters and computational costs and achieve 3.85× faster inference speed on RTX3090 and 4.93× on Jetson Nano.
+Official implementation of the paper "[SNP: Structured Neuron-level Pruning to Preserve Attention Scores](https://arxiv.org/abs/2404.11630)" accepted at [European Conference on Computer Vision (ECCV) 2024](https://eccv.ecva.net/Conferences/2024).
 
 <div align="center">
     <img src="./fig/perf_latency_params_jetson_nano.png" alt="Description1" style="width:39%; display: inline-block;">
     <img src="./fig/Fig1.PNG" alt="Description2" style="width:39%; display: inline-block;">
 </div>
 
+<!-- ## Introduction -->
+Structured Neuron-level Pruning (SNP) prunes neurons with less informative attention scores and eliminates redundancy among heads.
+Our approach effectively accelerates Transformer-based models for both **edge devices** and **server processors**.
+SNP with head pruning can compress the DeiT-Base by 80\% of the parameters and computational costs and achieve **4.93× speed up** on Jetson Nano and **3.85×** on RTX3090.
+
+
 ## Proposed Method
 
-Structured Neuron-level Pruning (SNP) prunes graphically connected query and key layers having the least informative attention scores while preserving the overall attention scores. Value layers, which can be pruned independently, are pruned to eliminate inter-head redundancy. For more detailed information please refer to the main [paper](https://arxiv.org/abs/2404.11630).
+SNP prunes graphically connected query and key layers having the least informative attention scores while preserving the overall attention scores. Value layers, which can be pruned independently, are pruned to eliminate inter-head redundancy. 
+For more details, please refer to the main [paper](https://arxiv.org/abs/2404.11630).
 
 <div align="center">
     <img src="./fig/proposed methods.PNG" alt="Description1" style="width:100%;">
@@ -23,7 +27,7 @@ Structured Neuron-level Pruning (SNP) prunes graphically connected query and key
     <img src="./fig/tab.PNG" alt="Description" style="width: 90%;height:60%">
 </div> -->
 
-## Benchmark
+## Benchmark on ImageNet-1K
 
 <center>
 
@@ -46,7 +50,10 @@ Structured Neuron-level Pruning (SNP) prunes graphically connected query and key
 
 ## Installation
 ```
+conda create -n snp python=3.8
+coda activate snp
 git clone https://github.com/Nota-NetsPresso/SNP.git
+cd SNP
 pip install -r requirements.txt
 ```
 
@@ -66,14 +73,14 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
     Please enter your NetsPresso Email:
     Please enter your NetsPresso Password:
     ```
-3. Enter the path to your ImageNet dataset:
+3. Enter the path to your [ImageNet-1K](https://www.image-net.org/download.php) dataset:
     ```
     Please enter the path to your ImageNet dataset:
     ```
 
-### Reproduce results on ImageNet
+### Reproduce the ImageNet-1K results
 <details>
-<summary>Reproducing the results of DeiT-T with 0.6 GFLOPs and 70.29% on ImageNet.</summary>
+<summary>Compressed DeiT-T: 0.6 GFLOPs and 70.29% Top-1 Acc.:</summary>
 
     CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
         python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
@@ -88,7 +95,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 </details>
 
 <details>
-<summary> Reproducing the results of DeiT-S with 2 GFLOPs and 78.52% on ImageNet.</summary>
+<summary> Compressed DeiT-S: 2.0 GFLOPs and 78.52% Top-1 Acc.:</summary>
 
         CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
             python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
@@ -103,11 +110,11 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
 </details>
 
 <details>
-<summary>Reproducing the results of DeiT-S with 1.27 GFLOPs and 73.32% on ImageNet.</summary>
+<summary>Compressed DeiT-S with 1.3 GFLOPs and 73.32% Top-1 Acc.:</summary>
 
         CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
             python -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
-                train.py --model "./reported_models/compressed_models/DeiT-S_1_27GFLOPs.pt" \
+                train.py --model "./reported_models/compressed_models/DeiT-S_1_3GFLOPs.pt" \
                         --lr 0.001 \
                         --batch-size 256 \
                         --epochs 300 \
@@ -142,7 +149,7 @@ Following steps compress the DeiT-T model using SNP and train it for 20 epochs:
                     > ./txt_logs/training_test.txt 2>&1 &
     ```
 
-## Try SNP on your own Model
+## Try SNP on Your Own Model
 
 <div align="center">
     <a href="https://netspresso.ai/?utm_source=git&utm_medium=banner_py&utm_campaign=np_renew" target="_blank"><img src="https://netspresso-docs-imgs.s3.ap-northeast-2.amazonaws.com/imgs/banner/NetsPresso2.0_banner.png"/>
@@ -207,6 +214,8 @@ compressed_model_info = compressor.compress_model(
 
 # Load the compressed model
 compressed_model=torch.load(compressed_model_info.compressed_model_path)
+
+# After compressing the model, the user needs to train the compressed model to compensate for the performance loss.
 ```
 
 ## Citation
