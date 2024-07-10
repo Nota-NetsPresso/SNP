@@ -1,6 +1,3 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-# All rights reserved.
-
 """
 3Augment implementation
 Data-augmentation (DA) based on dino DA (https://github.com/facebookresearch/dino)

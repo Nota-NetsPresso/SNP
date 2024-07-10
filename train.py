@@ -1,3 +1,5 @@
+# Copyright (c) 2024-present, Nota, Inc.
+# All rights reserved.
 import argparse
 import datetime
 import numpy as np

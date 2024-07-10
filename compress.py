@@ -1,3 +1,5 @@
+# Copyright (c) 2024-present, Nota, Inc.
+# All rights reserved.
 import os
 from pathlib import Path
 import torch

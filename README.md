@@ -218,6 +218,10 @@ compressed_model=torch.load(compressed_model_info.compressed_model_path)
 # After compressing the model, the user needs to train the compressed model to compensate for the performance loss.
 ```
 
+## License
+- All rights related to this repository and the compressed models are reserved by Nota Inc.
+- The intended use is strictly limited to research and non-commercial projects.
+
 ## Citation
 ```bibtex
 @article{shim2024snp,
