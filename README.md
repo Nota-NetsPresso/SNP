@@ -29,17 +29,17 @@ Structured Neuron-level Pruning (SNP) prunes graphically connected query and key
 
 | <sub>Model</sub>               | <sub>Top-1 (%)</sub>         | <sub>GFLOPs</sub>           | <sub>Raspberry Pi 4B (.onnx)</sub> | <sub>Jetson Nano (.trt)</sub>  | <sub>Xeon Silver 4210R (.pt)</sub> | <sub>RTX 3090 (.pt)</sub>         |
 |---------------------|-------------------|------------------|-------------------------|----------------------|-------------------------|-----------------------|
-| DeiT-Tiny           | 72.20             | 1.3              | 139.13                  | 41.03                | 34.74                   | 18.65                 |
-| + SNP (Ours)        | 70.29             | 0.6              | 81.63 (1.70×)           | 26.67 (1.54×)        | 25.25 (1.38×)           | 17.82 (1.05×)         |
-| DeiT-Small          | 79.80             | 4.6              | 401.27                  | 99.32                | 53.37                   | 46.13                 |
-| + SNP (Ours)        | 78.52             | 2.0              | 199.15 (2.01×)          | 45.51 (2.18×)        | 38.57 (1.38×)           | 32.91 (1.40×)         |
-| + SNP (Ours)        | 73.32             | 1.3              | 136.68 (2.94×)          | 32.03 (3.10×)        | 33.46 (1.60×)           | 26.98 (1.71×)         |
-| DeiT-Base           | 81.80             | 17.6             | 1377.71                 | 293.29               | 122.03                  | 151.35                |
-| + SNP (Ours)        | 79.63             | 6.4              | 565.68 (2.44×)          | 132.55 (2.21×)       | 64.65 (1.89×)           | 72.96 (2.07×)         |
-| + SNP (Ours) + Head | 79.12             | 3.5              | 307.00 (4.48×)          | 59.47 (4.93×)        | 46.09 (2.65×)           | 39.31 (3.85×)         |
-| EfficientFormer-L1  | 79.20             | 1.3              | 169.13                  | 30.95                | 43.75                   | 26.19                 |
-| + SNP (Ours)        | 75.53             | 0.6              | 95.12 (1.78×)           | 19.78 (1.56×)        | 38.25 (1.14×)           | 17.24 (1.52×)         |
-| + SNP (Ours)        | 74.51             | 0.5              | 82.60 (2.05×)           | 17.76 (1.74×)        | 35.15 (1.24×)           | 16.01 (1.64×)         |
+| <sub>DeiT-Tiny</sub>           | <sub>72.20</sub>             | <sub>1.3</sub>              | <sub>139.13</sub>                  | <sub>41.03</sub>                | <sub>34.74</sub>                   | <sub>18.65</sub>                 |
+| <sub>+ SNP (Ours)</sub>        | <sub>70.29</sub>             | <sub>0.6</sub>              | <sub>81.63 (1.70×)</sub>           | <sub>26.67 (1.54×)</sub>        | <sub>25.25 (1.38×)</sub>           | <sub>17.82 (1.05×)</sub>         |
+| <sub>DeiT-Small</sub>          | <sub>79.80</sub>             | <sub>4.6</sub>              | <sub>401.27</sub>                  | <sub>99.32</sub>                | <sub>53.37</sub>                   | <sub>46.13</sub>                 |
+| <sub>+ SNP (Ours)</sub>        | <sub>78.52</sub>             | <sub>2.0</sub>              | <sub>199.15 (2.01×)</sub>          | <sub>45.51 (2.18×)</sub>        | <sub>38.57 (1.38×)</sub>           | <sub>32.91 (1.40×)</sub>         |
+| <sub>+ SNP (Ours)</sub>        | <sub>73.32</sub>             | <sub>1.3</sub>              | <sub>136.68 (2.94×)</sub>          | <sub>32.03 (3.10×)</sub>        | <sub>33.46 (1.60×)</sub>           | <sub>26.98 (1.71×)</sub>         |
+| <sub>DeiT-Base</sub>           | <sub>81.80</sub>             | <sub>17.6</sub>             | <sub>1377.71</sub>                 | <sub>293.29</sub>               | <sub>122.03</sub>                  | <sub>151.35</sub>                |
+| <sub>+ SNP (Ours)</sub>        | <sub>79.63</sub>             | <sub>6.4</sub>              | <sub>565.68 (2.44×)</sub>          | <sub>132.55 (2.21×)</sub>       | <sub>64.65 (1.89×)</sub>           | <sub>72.96 (2.07×)</sub>         |
+| <sub>+ SNP (Ours) + Head</sub> | <sub>79.12</sub>             | <sub>3.5</sub>              | <sub>307.00 (4.48×)</sub>          | <sub>59.47 (4.93×)</sub>        | <sub>46.09 (2.65×)</sub>           | <sub>39.31 (3.85×)</sub>         |
+| <sub>EfficientFormer-L1</sub>  | <sub>79.20</sub>             | <sub>1.3</sub>              | <sub>169.13</sub>                  | <sub>30.95</sub>                | <sub>43.75</sub>                   | <sub>26.19</sub>                 |
+| <sub>+ SNP (Ours)</sub>        | <sub>75.53</sub>             | <sub>0.6</sub>              | <sub>95.12 (1.78×)</sub>           | <sub>19.78 (1.56×)</sub>        | <sub>38.25 (1.14×)</sub>           | <sub>17.24 (1.52×)</sub>         |
+| <sub>+ SNP (Ours)</sub>        | <sub>74.51</sub>             | <sub>0.5</sub>              | <sub>82.60 (2.05×)</sub>           | <sub>17.76 (1.74×)</sub>        | <sub>35.15 (1.24×)</sub>           | <sub>16.01 (1.64×)</sub>         |
 
 </center>
 
