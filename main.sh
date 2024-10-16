@@ -11,6 +11,7 @@ export USER_PWD
 export IMAGENET_PATH
 
 export OUPUT_DIR="./output"
+export LOG_DIR="./txt_logs"
 
 python3 compress.py --NetsPresso-Email ${USER_NAME} \
                     --NetsPresso-Pwd ${USER_PWD} \
@@ -25,6 +26,8 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+mkdir -p ${LOG_DIR}
+
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
     python3 -m torch.distributed.launch --nproc_per_node 8 --master_addr="127.0.0.1" --master_port=12345 \
         train.py --model "${OUPUT_DIR}/compressed/compressed.pt" \
@@ -32,7 +35,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7\
                  --epochs 20 \
                  --output_dir ${OUPUT_DIR} \
                  --data-path  ${IMAGENET_PATH}\
-                 > ./txt_logs/training_test.txt 2>&1 &
+                 > ${LOG_DIR}/training_test.txt 2>&1 &
 
 # Check if train.py ran successfully
 if [ $? -ne 0 ]; then
